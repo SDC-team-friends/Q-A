@@ -30,12 +30,25 @@ const pool = new Pool({
   database: process.env.PGDATABASE,
 })
 
-const getQuestions = (id, cb) => {
-
+const getQuestions = (id, page, count) => {
+  let amt
+  if (page === 0) {
+    return pool.query(`SELECT q.id question_id, q.body question_body, to_timestamp(q.date_written/1000) question_date, q.asker_name, q.helpful question_helpfulness, q.reported,(SELECT json_object_agg(answers.id, row_to_json(answers)) FROM (SELECT id, body, to_timestamp(date_written/1000) as date, answerer_name, helpful AS helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = answers.id)photos FROM answers WHERE question_id = q.id) answers) answers FROM questions AS q WHERE q.product_id=${id} AND q.reported=false FETCH FIRST ${count} ROW ONLY`)
+  }
+  if (page !== 0) {
+    amt = count * (page - 1)
+    return pool.query(`SELECT q.id question_id, q.body question_body, to_timestamp(q.date_written/1000) question_date, q.asker_name, q.helpful question_helpfulness, q.reported,(SELECT json_object_agg(answers.id, row_to_json(answers)) FROM (SELECT id, body, to_timestamp(date_written/1000) as date, answerer_name, helpful AS helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = answers.id)photos FROM answers WHERE question_id = q.id) answers) answers FROM questions AS q WHERE q.product_id=${id} AND q.reported=false OFFSET ${amt} FETCH FIRST ${count} ROW ONLY`)
+  }
 }
 
-const getAnswers = (id, cb) => {
-
+const getAnswers = (id, page, count) => {
+  let amt
+  if (page === 0) {
+    return pool.query(`SELECT a.id answer_id, a.body body, to_timestamp(a.date_written/1000) date, a.answerer_name, a.helpful helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = a.id) photos FROM answers as a WHERE a.question_id=${id} AND a.reported=false `)
+  } else {
+    amt = count * (page - 1)
+    return pool.query(`SELECT a.id answer_id, a.body body, to_timestamp(a.date_written/1000) date, a.answerer_name, a.helpful helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = a.id) photos FROM answers as a WHERE question_id=${id} AND reported=false OFFSET ${amt} FETCH FIRST ${count} ROW ONLY`)
+  }
 }
 
 const postQuestion = (id, cb) => {

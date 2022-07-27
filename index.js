@@ -10,4 +10,4 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/qa', qaRoutes)
 
-app.listen(PORT, () => `server listening on PORT: ${PORT}`)
+app.listen(PORT, () => console.log(`server listening on PORT: ${PORT}`))
