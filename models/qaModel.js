@@ -59,25 +59,37 @@ const postQuestion = (id, body, name, email) => {
   return pool.query(`INSERT INTO questions (product_id, body, date_written, asker_name, asker_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
 }
 
-const postAnswer = (id, cb) => {
+const postAnswer = (id, body, name, email, photos) => {
+  const newDate = new Date().getTime()
+  id = Number(id)
+  if (!photos) {
+    return pool.query(`INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
+  } else {
+    console.log(Array.isArray(photos))
+    return pool.query(`WITH ta AS (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest(ARRAY $8))`,[id, body, newDate, name, email, false, 0, photos])
+  }
 
 }
 
-const reportQuestion = (id, cb) => {
+// with ta as (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES (3518964, 'qwmcoiqcowcocococ',1658941118735,'riceball','riceball@gmail.com',false,0) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest(ARRAY[1,2,3,4,5]));
 
+
+
+const reportQuestion = (id) => {
+  return pool.query('UPDATE questions SET reported=true WHERE id=$1', [id])
 }
 
 
-const reportAnswer = (id, cb) => {
-
+const reportAnswer = (id) => {
+  return pool.query('UPDATE answers SET reported=true WHERE id=$1', [id])
 }
 
-const questionHelpful = (id, cb) => {
-
+const questionHelpful = (id) => {
+  return pool.query('UPDATE questions SET helpful=helpful + 1 WHERE id=$1', [id])
 }
 
-const answerHelpful = (id, cb) => {
-
+const answerHelpful = (id) => {
+  return pool.query('UPDATE answers SET helpful=helpful + 1 WHERE id=$1', [id])
 }
 
 
