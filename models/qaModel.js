@@ -1,26 +1,27 @@
 const { Pool } = require('pg')
+const format = require('pg-format')
 const mongoose = require('mongoose')
 
-const questionsSchema = mongoose.Schema({
-  product_id: { type: Number, required: true },
-  body: { type: String, required: true },
-  date_written: Number,
-  asker_name: { type: String, required: true },
-  asker_email: { type: String, required: true },
-  reported: { type: Boolean, default: false },
-  helpful: { type: Number, default: 0 },
-})
+// const questionsSchema = mongoose.Schema({
+//   product_id: { type: Number, required: true },
+//   body: { type: String, required: true },
+//   date_written: Number,
+//   asker_name: { type: String, required: true },
+//   asker_email: { type: String, required: true },
+//   reported: { type: Boolean, default: false },
+//   helpful: { type: Number, default: 0 },
+// })
 
-const answersSchema = mongoose.Schema({
-  question_id: { type: Number, required: true },
-  body: { type: String, required: true },
-  date_written: Number,
-  answerer_name: { type: String, required: true },
-  answerer_email: { type: String, required: true },
-  reported: { type: Boolean, default: false },
-  helpful: { type: Number, default: 0 },
-  photos: [String]
-})
+// const answersSchema = mongoose.Schema({
+//   question_id: { type: Number, required: true },
+//   body: { type: String, required: true },
+//   date_written: Number,
+//   answerer_name: { type: String, required: true },
+//   answerer_email: { type: String, required: true },
+//   reported: { type: Boolean, default: false },
+//   helpful: { type: Number, default: 0 },
+//   photos: [String]
+// })
 
 const pool = new Pool({
   host: process.env.PGHOST,
@@ -65,15 +66,9 @@ const postAnswer = (id, body, name, email, photos) => {
   if (!photos) {
     return pool.query(`INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
   } else {
-    console.log(Array.isArray(photos))
-    return pool.query(`WITH ta AS (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest(ARRAY $8))`,[id, body, newDate, name, email, false, 0, photos])
+    return pool.query(`WITH ta AS (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest($8::text[]))`,[id, body, newDate, name, email, false, 0, photos])
   }
-
 }
-
-// with ta as (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES (3518964, 'qwmcoiqcowcocococ',1658941118735,'riceball','riceball@gmail.com',false,0) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest(ARRAY[1,2,3,4,5]));
-
-
 
 const reportQuestion = (id) => {
   return pool.query('UPDATE questions SET reported=true WHERE id=$1', [id])
@@ -91,9 +86,6 @@ const questionHelpful = (id) => {
 const answerHelpful = (id) => {
   return pool.query('UPDATE answers SET helpful=helpful + 1 WHERE id=$1', [id])
 }
-
-
-
 
 module.exports = {
   getQuestions,
