@@ -2,10 +2,12 @@ const db = require('../models/qaModel.js')
 
 const getQuestions = async (req, res) => {
   const { product_id } = req.query
+  console.log(product_id)
   const page = req.query.page || 0
   const count = req.query.count || 5
   try {
     const { rows } = await db.getQuestions(product_id, page, count)
+    console.log(rows)
     res.status(200).json(rows)
   } catch(err) {
     res.status(400).send(err)
@@ -30,28 +32,54 @@ const getAnswers = async (req, res) => {
   }
 }
 
-const postQuestion = (req, res) => {
+const postQuestion = async (req, res) => {
+    const { body, name, email , product_id} = req.body
+  try{
+    const { rows } = await db.postQuestion(product_id, body, name, email)
+    res.status(201).send('CREATED')
+  } catch(err) {
 
+  }
 }
 
-const postAnswer = (req, res) => {
+const postAnswer = async (req, res) => {
+  try{
 
+  } catch(err) {
+
+  }
 }
 
-const reportQuestion = (req, res) => {
+const reportQuestion = async (req, res) => {
+  try{
 
+  } catch(err) {
+
+  }
 }
 
-const reportAnswer = (req, res) => {
+const reportAnswer = async (req, res) => {
+  try{
 
+  } catch(err) {
+
+  }
 }
 
-const questionHelpful = (req, res) => {
+const questionHelpful = async (req, res) => {
+  try{
 
+  } catch(err) {
+
+  }
 }
 
-const answerHelpful = (req, res) => {
+const answerHelpful = async (req, res) => {
+  try{
 
+  } catch(err) {
+
+  }
 }
 
 module.exports = {

@@ -28,6 +28,9 @@ const pool = new Pool({
   port: process.env.PGPORT,
   password: process.env.PGPASS,
   database: process.env.PGDATABASE,
+  max: 20,
+  // idleTimeoutMillis: 30000,
+  // connectionTimeoutMillis: 2000,
 })
 
 const getQuestions = (id, page, count) => {
@@ -51,8 +54,9 @@ const getAnswers = (id, page, count) => {
   }
 }
 
-const postQuestion = (id, cb) => {
-
+const postQuestion = (id, body, name, email) => {
+  const newDate = new Date().getTime()
+  return pool.query(`INSERT INTO questions (product_id, body, date_written, asker_name, asker_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
 }
 
 const postAnswer = (id, cb) => {
@@ -62,6 +66,7 @@ const postAnswer = (id, cb) => {
 const reportQuestion = (id, cb) => {
 
 }
+
 
 const reportAnswer = (id, cb) => {
 
