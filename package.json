@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test-q": "npx artillery run questions.yml",
-    "test-a": "npx artillery run answers.yml"
+    "test-q": "npx artillery run ./test/questions.yml",
+    "test-a": "npx artillery run ./test/answers.yml"
   },
   "repository": {
     "type": "git",
