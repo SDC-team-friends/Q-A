@@ -1,0 +1,11 @@
+config:
+  target: "http://localhost:3000/qa"
+  phases:
+    - duration: 30
+      arrivalRate: 100
+
+scenarios:
+  - name: "page load get request"
+    flow:
+      - get:
+          url: "/questions/?product_id=50"
