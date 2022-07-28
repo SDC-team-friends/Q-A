@@ -5,7 +5,7 @@ config:
       arrivalRate: 100
 
 scenarios:
-  - name: "page load get request"
+  - name: "page load get questions request"
     flow:
       - get:
-          url: "/questions/?product_id=50"
+          url: "/questions/?product_id=40500"
