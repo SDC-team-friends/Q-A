@@ -2,13 +2,15 @@ const db = require('../models/qaModel.js')
 
 const getQuestions = async (req, res) => {
   const { product_id } = req.query
-  console.log(product_id)
   const page = req.query.page || 0
   const count = req.query.count || 5
   try {
     const { rows } = await db.getQuestions(product_id, page, count)
-    console.log(rows)
-    res.status(200).json(rows)
+    const data = {
+      product_id,
+      results: rows
+    }
+    res.status(200).json(data)
   } catch(err) {
     res.status(400).send(err)
   }

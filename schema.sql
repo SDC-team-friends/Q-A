@@ -32,6 +32,10 @@ CREATE TABLE IF NOT EXISTS photos(
   url TEXT
 );
 
+CREATE INDEX product_id_idx ON questions (product_id);
+CREATE INDEX question_id_idx ON answers (question_id);
+CREATE INDEX answer_id_idx ON photos (answer_id);
+
 \COPY questions FROM 'csv/questions.csv' delimiter ',' CSV HEADER;
 \COPY answers FROM 'csv/answers.csv' delimiter ',' CSV HEADER;
 \COPY photos FROM 'csv/answers_photos.csv' delimiter ',' CSV HEADER;
