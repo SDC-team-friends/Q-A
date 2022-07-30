@@ -20,12 +20,15 @@
   },
   "homepage": "https://github.com/SDC-team-friends/Q-A#readme",
   "dependencies": {
+    "chai": "^4.3.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "mocha": "^10.0.0",
     "mongoose": "^6.5.0",
     "nodemon": "^2.0.19",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "supertest": "^6.2.4"
   },
   "devDependencies": {
     "artillery": "^2.0.0-22"
