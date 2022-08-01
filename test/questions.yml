@@ -2,10 +2,12 @@ config:
   target: "http://localhost:3000/qa"
   phases:
     - duration: 30
-      arrivalRate: 500
+      arrivalRate: 100
 
 scenarios:
   - name: "page load get questions request"
     flow:
-      - get:
-          url: "/questions/?product_id=40500"
+        - loop:
+            - get:
+                url: "/questions/?product_id={{ $loopCount }}"
+          count: 100

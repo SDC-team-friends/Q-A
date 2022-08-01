@@ -2,10 +2,10 @@ config:
   target: "http://localhost:3000/qa"
   phases:
     - duration: 30
-      arrivalRate: 500
+      arrivalRate: 100
 
 scenarios:
   - name: "get answers request"
     flow:
       - get:
-          url: "/questions/30000/answers"
+          url: "/questions/6000000/answers"
