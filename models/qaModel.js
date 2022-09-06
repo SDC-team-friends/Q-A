@@ -34,8 +34,7 @@ const getQuestions = (id, page, count) => {
   let amt
   if (page === 0) {
     return pool.query(`SELECT q.id question_id, q.body question_body, to_timestamp(q.date_written/1000) question_date, q.asker_name, q.helpful question_helpfulness, q.reported,(SELECT json_object_agg(answers.id, row_to_json(answers)) FROM (SELECT id, body, to_timestamp(date_written/1000) as date, answerer_name, helpful AS helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = answers.id)photos FROM answers WHERE question_id = q.id) answers) answers FROM questions AS q WHERE q.product_id=$1 AND q.reported=false FETCH FIRST $2 ROW ONLY`, [id, count])
-  }
-  if (page !== 0) {
+  } else {
     amt = count * (page - 1)
     return pool.query(`SELECT q.id question_id, q.body question_body, to_timestamp(q.date_written/1000) question_date, q.asker_name, q.helpful question_helpfulness, q.reported,(SELECT json_object_agg(answers.id, row_to_json(answers)) FROM (SELECT id, body, to_timestamp(date_written/1000) as date, answerer_name, helpful AS helpfulness, (SELECT json_agg(json_build_object('id', p.id, 'url', p.url)) FROM photos AS p WHERE p.answer_id = answers.id)photos FROM answers WHERE question_id = q.id) answers) answers FROM questions AS q WHERE q.product_id=$1 AND q.reported=false OFFSET $2 FETCH FIRST $3 ROW ONLY`, [id, amt, count])
   }
