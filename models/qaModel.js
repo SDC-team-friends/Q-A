@@ -1,27 +1,6 @@
 const { Pool } = require('pg')
 const mongoose = require('mongoose')
 
-// const questionsSchema = mongoose.Schema({
-//   product_id: { type: Number, required: true },
-//   body: { type: String, required: true },
-//   date_written: Number,
-//   asker_name: { type: String, required: true },
-//   asker_email: { type: String, required: true },
-//   reported: { type: Boolean, default: false },
-//   helpful: { type: Number, default: 0 },
-// })
-
-// const answersSchema = mongoose.Schema({
-//   question_id: { type: Number, required: true },
-//   body: { type: String, required: true },
-//   date_written: Number,
-//   answerer_name: { type: String, required: true },
-//   answerer_email: { type: String, required: true },
-//   reported: { type: Boolean, default: false },
-//   helpful: { type: Number, default: 0 },
-//   photos: [String]
-// })
-
 const pool = new Pool({
   host: process.env.PGHOST,
   user: process.env.PGUSER,
@@ -52,16 +31,16 @@ const getAnswers = (id, page, count) => {
 
 const postQuestion = (id, body, name, email) => {
   const newDate = new Date().getTime()
-  return pool.query(`INSERT INTO questions (product_id, body, date_written, asker_name, asker_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
+  return pool.query(`INSERT INTO questions (product_id, body, date_written, asker_name, asker_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`, [id, body, newDate, name, email, false, 0])
 }
 
 const postAnswer = (id, body, name, email, photos) => {
   const newDate = new Date().getTime()
   id = Number(id)
   if (!photos) {
-    return pool.query(`INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`,[id, body, newDate, name, email, false, 0])
+    return pool.query(`INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7)`, [id, body, newDate, name, email, false, 0])
   } else {
-    return pool.query(`WITH ta AS (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest($8::text[]))`,[id, body, newDate, name, email, false, 0, photos])
+    return pool.query(`WITH ta AS (INSERT INTO answers (question_id, body, date_written, answerer_name, answerer_email, reported, helpful) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id) INSERT INTO photos (answer_id, url) VALUES ((SELECT id from ta), unnest($8::text[]))`, [id, body, newDate, name, email, false, 0, photos])
   }
 }
 
