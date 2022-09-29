@@ -12,5 +12,4 @@ router.put('/answers/:answer_id/helpful', answerHelpful)
 router.put('/questions/:question_id/report', reportQuestion)
 router.put('/answers/:answer_id/report', reportAnswer)
 
-
 module.exports = router
